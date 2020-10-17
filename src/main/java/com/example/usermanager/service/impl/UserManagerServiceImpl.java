@@ -2,6 +2,7 @@ package com.example.usermanager.service.impl;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -10,10 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.usermanager.dto.UserManagerDto;
+import com.example.usermanager.dto.UserManagerDTO;
+import com.example.usermanager.entity.PhoneEntity;
 import com.example.usermanager.entity.UserManagerEntity;
 import com.example.usermanager.repository.UserManagerRepository;
 import com.example.usermanager.service.UserManagerService;
+import com.example.usermanager.utils.UserValidation;
 
 
 @Service
@@ -27,6 +30,8 @@ public class UserManagerServiceImpl implements UserManagerService {
 	private UserManagerRepository userRepository;
 	
 	
+	private UserValidation userValidation = new UserValidation();
+	
 	
 	
 	/**
@@ -34,13 +39,15 @@ public class UserManagerServiceImpl implements UserManagerService {
 	 * @param userDto
 	 * @return ResponseEntity<Object>
 	 */
-	public ResponseEntity<Object> addUser(UserManagerDto userManagerDto){
+	public ResponseEntity<Object> addUser(UserManagerDTO userManagerDto){
 		
 		UserManagerEntity userManagerEntity = this.modelMapper.map(userManagerDto, UserManagerEntity.class);
+		List<PhoneEntity> phones = userManagerEntity.getPhones();
+		phones.forEach(phone -> phone.setUserEntity(userManagerEntity));
 		
-		userRepository.save(userManagerEntity);
-				
-		return new ResponseEntity<Object>("User added succesfully", HttpStatus.OK);
+		return userValidation
+				.validResponse(this.modelMapper
+						.map(userRepository.save(userManagerEntity),UserManagerDTO.class));
 	}
 	
 	/**
@@ -48,7 +55,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 	 * @param userManagerDto
 	 * @return ResponseEntity<Object>
 	 */
-	public ResponseEntity<Object> updateUser(UserManagerDto userManagerDto){
+	public ResponseEntity<Object> updateUser(UserManagerDTO userManagerDto){
 		
 		if(userRepository.findById(userManagerDto.getId()).isPresent()) {
 			
@@ -83,10 +90,10 @@ public class UserManagerServiceImpl implements UserManagerService {
 	 * Get Users
 	 * @return ResponseEntity<List<UserDto>>
 	 */
-	public ResponseEntity<List<UserManagerDto>> getUsers(){
-		Type listType = new TypeToken<List<UserManagerDto>>(){}.getType();
-		List<UserManagerDto> userManagerDtoList = modelMapper.map(userRepository.findAll(),listType);
-		return new ResponseEntity<List<UserManagerDto>>(userManagerDtoList,HttpStatus.OK);
+	public ResponseEntity<List<UserManagerDTO>> getUsers(){
+		Type listType = new TypeToken<List<UserManagerDTO>>(){}.getType();
+		List<UserManagerDTO> userManagerDtoList = modelMapper.map(userRepository.findAll(),listType);
+		return new ResponseEntity<List<UserManagerDTO>>(userManagerDtoList,HttpStatus.OK);
 	}
 	
 }

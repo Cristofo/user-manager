@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.usermanager.dto.UserManagerDto;
+import com.example.usermanager.dto.UserManagerDTO;
 import com.example.usermanager.service.UserManagerService;
 
 @RestController
@@ -24,12 +24,12 @@ public class UserManagerController {
 	private UserManagerService userService;
 	
 	@PostMapping("/addUser")
-	public ResponseEntity<Object> addUser(@RequestBody UserManagerDto userDto){
+	public ResponseEntity<Object> addUser(@RequestBody UserManagerDTO userDto){
 		return userService.addUser(userDto);
 	}
 	
 	@PutMapping("/updateUser")
-	public ResponseEntity<Object> updateUser(UserManagerDto userDto){
+	public ResponseEntity<Object> updateUser(UserManagerDTO userDto){
 		return userService.updateUser(userDto);
 	}
 	
@@ -39,7 +39,7 @@ public class UserManagerController {
 	}
 	
 	@GetMapping("/getUsers")
-	public ResponseEntity<List<UserManagerDto>> getUsers(){
+	public ResponseEntity<List<UserManagerDTO>> getUsers(){
 		return userService.getUsers();
 	}
 }

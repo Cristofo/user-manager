@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.example.usermanager.dto.UserManagerDto;
+import com.example.usermanager.dto.UserManagerDTO;
 
 
 public interface UserManagerService {
 
-	public ResponseEntity<Object> addUser(UserManagerDto userManagerDto);
+	public ResponseEntity<Object> addUser(UserManagerDTO userManagerDto);
 	
-	public ResponseEntity<Object> updateUser(UserManagerDto userManagerDto);
+	public ResponseEntity<Object> updateUser(UserManagerDTO userManagerDto);
 	
 	public ResponseEntity<Object> deleteUser(Long idUser);
 	
-	public ResponseEntity<List<UserManagerDto>> getUsers();
+	public ResponseEntity<List<UserManagerDTO>> getUsers();
 }
