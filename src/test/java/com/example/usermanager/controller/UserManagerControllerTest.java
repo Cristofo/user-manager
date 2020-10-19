@@ -54,7 +54,7 @@ public class UserManagerControllerTest {
 	private JwtTokenUtil jwtTokenUtil;
 	
 	private Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
-	private String token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTYwMzA4NzUxOCwiaWF0IjoxNjAzMDY5NTE4fQ.JXeHk5bWRCt21TyoaVjEOPK-BdLIWZlh2Mylq9tGDhUHx70vB9sz9SIlO8QBERfZJ_PQoAwGj7Nrz38p5dI3FA";
+	private String token = "Bearer token";
 	
 	  @Before
 	    public void setUp() {
