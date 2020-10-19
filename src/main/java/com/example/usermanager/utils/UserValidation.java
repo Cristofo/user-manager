@@ -40,11 +40,11 @@ public class UserValidation {
 	
 	public ErrorListDTO getValidationsAddUser(String email, String password, String userName ){
 		
-		UserManagerEntity isEmailRepeated = userRepository.findByEmail(email);
-		UserManagerEntity isUserNameRepeated = userRepository.findByName(userName);
-		
 		ErrorListDTO errors =  new ErrorListDTO();
 		List<String> listErrors = new ArrayList<>();
+		
+		UserManagerEntity isEmailRepeated = userRepository.findByEmail(email);
+		UserManagerEntity isUserNameRepeated = userRepository.findByName(userName);
 		
 		if(!validateRepeated(isEmailRepeated)) listErrors.add(userConstants.emailRepeated);
 		
@@ -53,6 +53,8 @@ public class UserValidation {
 		if(!isValidMail(email)) listErrors.add(userConstants.emailInvalid);
 		
 		if(!validateRepeated(isUserNameRepeated)) listErrors.add(userConstants.userRepeated);
+		
+		if(null == userName ||userName.trim().isEmpty()) listErrors.add(userConstants.userNameEmpty);
 		
 		errors.setErrors(listErrors);
 		
@@ -78,6 +80,8 @@ public class UserValidation {
 		if(!isValidPassword(password)) listErrors.add(userConstants.passwordInvalid);
 		
 		if(!isValidMail(email)) listErrors.add(userConstants.emailInvalid);
+		
+		if(null == userName ||userName.trim().isEmpty()) listErrors.add(userConstants.userNameEmpty);
 		
 		errors.setErrors(listErrors);
 		

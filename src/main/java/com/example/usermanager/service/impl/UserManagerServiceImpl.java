@@ -75,6 +75,7 @@ public class UserManagerServiceImpl implements UserManagerService {
 				final boolean userNameSame = userManagerEntity.get().getName().equals(userManagerDto.getName())?true:false;
 				ErrorListDTO errorListDto = userValidation.getValidationsUpdate(userManagerDto.getEmail(),emailSame,
 						 userManagerDto.getPassword(),userManagerDto.getName(), userNameSame);
+				
 				if(errorListDto.getErrors().isEmpty()) {
 					UserManagerEntity userManagerEntityRes = this.modelMapper.map(userManagerDto, UserManagerEntity.class);
 					userManagerEntityRes.setModificationDate(userValidation.getCurrentDate());
