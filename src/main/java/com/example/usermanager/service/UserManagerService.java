@@ -16,4 +16,6 @@ public interface UserManagerService {
 	public ResponseEntity<Object> deleteUser(Long idUser);
 	
 	public ResponseEntity<List<UserManagerDTO>> getUsers();
+	
+	public void updateLoginData(String userName, String token);
 }

@@ -7,15 +7,18 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.example.usermanager.dto.ErrorListDTO;
 import com.example.usermanager.dto.UserManagerDTO;
 import com.example.usermanager.entity.PhoneEntity;
 import com.example.usermanager.entity.UserManagerEntity;
 import com.example.usermanager.repository.UserManagerRepository;
 import com.example.usermanager.service.UserManagerService;
+import com.example.usermanager.utils.UserConstants;
 import com.example.usermanager.utils.UserValidation;
 
 
@@ -30,24 +33,33 @@ public class UserManagerServiceImpl implements UserManagerService {
 	private UserManagerRepository userRepository;
 	
 	
-	private UserValidation userValidation = new UserValidation();
+	private UserConstants userConstants = new UserConstants();
 	
 	
+	@Autowired
+	private UserValidation userValidation;
 	
 	/**
 	 * Add User
-	 * @param userDto
+	 * @param UserManagerDTO
 	 * @return ResponseEntity<Object>
 	 */
-	public ResponseEntity<Object> addUser(UserManagerDTO userManagerDto){
+	public ResponseEntity<Object> addUser(UserManagerDTO userManagerDto){ 
+		ErrorListDTO errorListDto = userValidation.getValidationsAddUser(userManagerDto.getEmail(), userManagerDto.getPassword(), userManagerDto.getName());
 		
-		UserManagerEntity userManagerEntity = this.modelMapper.map(userManagerDto, UserManagerEntity.class);
-		List<PhoneEntity> phones = userManagerEntity.getPhones();
-		phones.forEach(phone -> phone.setUserEntity(userManagerEntity));
+		if(errorListDto.getErrors().isEmpty()) {
+			UserManagerEntity userManagerEntity = this.modelMapper.map(userManagerDto, UserManagerEntity.class);
+			List<PhoneEntity> phones = userManagerEntity.getPhones();
+			phones.forEach(phone -> phone.setUserEntity(userManagerEntity));
+			userManagerEntity.setCreationDate(userValidation.getCurrentDate());
+			userManagerEntity.setModificationDate(userValidation.getCurrentDate());
+	    
 		
 		return userValidation
 				.validResponse(this.modelMapper
-						.map(userRepository.save(userManagerEntity),UserManagerDTO.class));
+						.map(userRepository.save(userManagerEntity),UserManagerDTO.class), userConstants.addUserError);
+		}
+		return new ResponseEntity<Object>(errorListDto, HttpStatus.BAD_REQUEST);
 	}
 	
 	/**
@@ -57,16 +69,26 @@ public class UserManagerServiceImpl implements UserManagerService {
 	 */
 	public ResponseEntity<Object> updateUser(UserManagerDTO userManagerDto){
 		
-		if(userRepository.findById(userManagerDto.getId()).isPresent()) {
-			
-			if(null == userRepository.save(this.modelMapper.map(userManagerDto, UserManagerEntity.class)).getId())
-				return new ResponseEntity<Object>("It was not possible to update the user", HttpStatus.INTERNAL_SERVER_ERROR);
-			
-			return new ResponseEntity<Object>("User succesfully updated", HttpStatus.OK);
-			
-		} else {
-			return new ResponseEntity<Object>("User doesn't exist", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		Optional<UserManagerEntity> userManagerEntity  = userRepository.findById(userManagerDto.getId());
+			if(userManagerEntity.isPresent()) {
+				final boolean emailSame = userManagerEntity.get().getEmail().equals(userManagerDto.getEmail())?true:false;
+				final boolean userNameSame = userManagerEntity.get().getName().equals(userManagerDto.getName())?true:false;
+				ErrorListDTO errorListDto = userValidation.getValidationsUpdate(userManagerDto.getEmail(),emailSame,
+						 userManagerDto.getPassword(),userManagerDto.getName(), userNameSame);
+				if(errorListDto.getErrors().isEmpty()) {
+					UserManagerEntity userManagerEntityRes = this.modelMapper.map(userManagerDto, UserManagerEntity.class);
+					userManagerEntityRes.setModificationDate(userValidation.getCurrentDate());
+					
+					return userValidation
+							.validResponse(this.modelMapper
+									.map(userRepository.save(userManagerEntityRes),UserManagerDTO.class), userConstants.updateUserError);
+				}else {
+					return new ResponseEntity<Object>(errorListDto, HttpStatus.BAD_REQUEST);
+				}
+				
+			} else {
+				return new ResponseEntity<Object>(userConstants.notExitsUserError, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 	}
 	
 	
@@ -77,12 +99,15 @@ public class UserManagerServiceImpl implements UserManagerService {
 	 */
 	public ResponseEntity<Object> deleteUser(Long idUser){
 		
-			userRepository.deleteById(idUser);
+			try {
+				userRepository.deleteById(idUser);
 			
-			if(null == userRepository.findById(idUser))
-				return new ResponseEntity<Object>("User deleted succesfully", HttpStatus.OK);
-			
-			return new ResponseEntity<Object>("It was not possible to delete the user", HttpStatus.INTERNAL_SERVER_ERROR);
+				if(!userRepository.findById(idUser).isPresent())
+					return new ResponseEntity<Object>(userConstants.userDeletedSuccess, HttpStatus.OK);
+			}catch (EmptyResultDataAccessException e) {
+				return new ResponseEntity<Object>(userConstants.userDeletedError, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			return new ResponseEntity<Object>(userConstants.userDeletedError, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	
@@ -95,5 +120,19 @@ public class UserManagerServiceImpl implements UserManagerService {
 		List<UserManagerDTO> userManagerDtoList = modelMapper.map(userRepository.findAll(),listType);
 		return new ResponseEntity<List<UserManagerDTO>>(userManagerDtoList,HttpStatus.OK);
 	}
+
+	@Override
+	public void updateLoginData(String userName, String token) {
+		UserManagerEntity userManagerEntity = userRepository.findByName(userName);
+		userManagerEntity.setLastLoginDate(userValidation.getCurrentDate());
+		userManagerEntity.setToken(token);
+		userManagerEntity.setActive(true);
+		updateUser(this.modelMapper.map(userManagerEntity, UserManagerDTO.class));
+		
+		
+	}
+	
+	
+
 	
 }

@@ -9,10 +9,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
-@Data	
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 @Table(name="PHONE")
 public class PhoneEntity {
 	
@@ -20,8 +26,8 @@ public class PhoneEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPhone ;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="id", nullable=false)
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="id")
 	private UserManagerEntity userEntity;
 	
 	private Long number;

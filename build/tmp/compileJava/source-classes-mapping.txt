@@ -1,0 +1,41 @@
+com/example/usermanager/entity/PhoneEntity.java
+ com.example.usermanager.entity.PhoneEntity
+com/example/usermanager/dto/AuthenticationReqDTO.java
+ com.example.usermanager.dto.AuthenticationReqDTO
+com/example/usermanager/dto/PhoneDTO.java
+ com.example.usermanager.dto.PhoneDTO
+com/example/usermanager/repository/PhoneRepository.java
+ com.example.usermanager.repository.PhoneRepository
+com/example/usermanager/service/impl/UserManagerServiceImpl.java
+ com.example.usermanager.service.impl.UserManagerServiceImpl
+ com.example.usermanager.service.impl.UserManagerServiceImpl$1
+com/example/usermanager/utils/UserConstants.java
+ com.example.usermanager.utils.UserConstants
+com/example/usermanager/service/MyUserDetailsService.java
+ com.example.usermanager.service.MyUserDetailsService
+com/example/usermanager/config/SecurityConfigurer.java
+ com.example.usermanager.config.SecurityConfigurer
+com/example/usermanager/dto/ErrorListDTO.java
+ com.example.usermanager.dto.ErrorListDTO
+com/example/usermanager/entity/UserManagerEntity.java
+ com.example.usermanager.entity.UserManagerEntity
+com/example/usermanager/controller/UserManagerController.java
+ com.example.usermanager.controller.UserManagerController
+com/example/usermanager/UserManagerApplication.java
+ com.example.usermanager.UserManagerApplication
+com/example/usermanager/service/UserManagerService.java
+ com.example.usermanager.service.UserManagerService
+com/example/usermanager/dto/UserManagerDTO.java
+ com.example.usermanager.dto.UserManagerDTO
+com/example/usermanager/dto/AuthenticationRespDTO.java
+ com.example.usermanager.dto.AuthenticationRespDTO
+com/example/usermanager/utils/UserValidation.java
+ com.example.usermanager.utils.UserValidation
+com/example/usermanager/config/JwtTokenUtil.java
+ com.example.usermanager.config.JwtTokenUtil
+com/example/usermanager/config/ModelMapperUtil.java
+ com.example.usermanager.config.ModelMapperUtil
+com/example/usermanager/repository/UserManagerRepository.java
+ com.example.usermanager.repository.UserManagerRepository
+com/example/usermanager/filter/JwtRequestFilter.java
+ com.example.usermanager.filter.JwtRequestFilter
