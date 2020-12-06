@@ -89,7 +89,7 @@ public class UserValidation {
 	}
 	
 	private boolean isValidMail(String mail) {
-		//esta expresion valida que no haya 2 puntos consecutivos y también valida que no comience con punto o termine con punto
+		/**esta expresion valida que no haya 2 puntos consecutivos y también valida que no comience con punto o termine con punto*/
 		String regEx = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
 		 
 		Pattern pattern = Pattern.compile(regEx);

@@ -43,7 +43,7 @@ public class UserManagerEntity {
 	private boolean isActive;
 	
 	@JsonBackReference 
-	@OneToMany(mappedBy = "userEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.EAGER )
+	@OneToMany(mappedBy = "userEntity", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY )
 	private List<PhoneEntity> phones;
 	
 }

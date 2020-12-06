@@ -1,9 +1,14 @@
 package com.example.usermanager.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +28,7 @@ import com.example.usermanager.dto.AuthenticationRespDTO;
 import com.example.usermanager.dto.UserManagerDTO;
 import com.example.usermanager.service.MyUserDetailsService;
 import com.example.usermanager.service.UserManagerService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
 @RequestMapping(value="/api")
@@ -41,6 +47,9 @@ public class UserManagerController {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 	
+//	@Autowired
+//	private KafkaTemplate<String, String> kafkaTemplate;
+	
 	
 	@PostMapping("/addUser")
 	public ResponseEntity<Object> addUser(@RequestBody UserManagerDTO userDto){
@@ -57,8 +66,14 @@ public class UserManagerController {
 		return userService.deleteUser(idUser);
 	}
 	
+	@HystrixCommand(fallbackMethod = "hystrixGetUsers", commandKey = "getUsers", groupKey = "getUsers")
 	@GetMapping("/getUsers")
 	public ResponseEntity<List<UserManagerDTO>> getUsers(){
+		int val = 1_234;
+//		kafkaTemplate.send("Kafka_Example", "test message");
+		if(RandomUtils.nextBoolean()) {
+			throw new RuntimeException("Hystrix custom exception");
+		}
 		return userService.getUsers();	
 	}
 	
@@ -79,5 +94,12 @@ public class UserManagerController {
 		userService.updateLoginData(authRequest.getUsername(), jwt);
 		
 		return ResponseEntity.ok(new AuthenticationRespDTO(jwt));
+	}
+	
+	public ResponseEntity<List<UserManagerDTO>> hystrixGetUsers() {
+		UserManagerDTO userDto = new UserManagerDTO();
+		List<UserManagerDTO> list = new ArrayList<>();
+		list.add(userDto);
+		return new ResponseEntity<List<UserManagerDTO>>(list,HttpStatus.OK);
 	}
 }

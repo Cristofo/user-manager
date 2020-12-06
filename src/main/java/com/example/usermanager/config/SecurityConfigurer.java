@@ -9,11 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.firewall.HttpFirewall;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import com.example.usermanager.filter.JwtRequestFilter;
 import com.example.usermanager.service.MyUserDetailsService;
@@ -40,11 +37,9 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
 		auth.userDetailsService(myUserDetailsService);
 	}
 	
-	
-	
 	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return NoOpPasswordEncoder.getInstance();
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 	
@@ -57,17 +52,4 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter{
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
-	
-	
-	  @Bean
-	    public HttpFirewall looseHttpFirewall() {
-	        StrictHttpFirewall firewall = new StrictHttpFirewall();
-	        firewall.setAllowSemicolon(true);
-	        firewall.setAllowUrlEncodedPercent(true);
-	        firewall.setAllowUrlEncodedSlash(true);
-	        firewall.setAllowUrlEncodedPeriod(true);
-	        firewall.setAllowBackSlash(true);
-	        return firewall;
-	    }
-	
 }
